@@ -66,17 +66,13 @@ jobs:
       # 6️⃣ Restaurar la base de datos de prueba
       - name: Restore database
         env:
-          PGPASSWORD: postgres
+         PGPASSWORD: postgres
         run: |
-          echo "📥 Descargando base de datos dvdrental..."
-          wget -q https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip
-          unzip -o dvdrental.zip
+         echo "🗄 Restaurando base de datos local dvdrental..."
+         psql -U postgres -h localhost -d dvdrental -f dvdrental/restore.sql
 
-          echo "🗄 Restaurando base de datos..."
-          pg_restore -U postgres -h localhost -d dvdrental dvdrental.tar || true
-
-          echo "📌 Verificando tablas existentes..."
-          psql -U postgres -h localhost -d dvdrental -c "\dt" || true
+         echo "📌 Verificando tablas existentes..."
+         psql -U postgres -h localhost -d dvdrental -c "\dt"
 
       # 7️⃣ Iniciar el servidor API
       - name: Start API server
