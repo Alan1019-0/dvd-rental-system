@@ -50,12 +50,12 @@ jobs:
             echo "Asegúrate de tener el archivo bloque de dependencias."
             exit 1
           fi
-          echo "✅ package-lock.json encontrado."
+          echo "✅ package.json encontrado."
 
       # 4️⃣ Instalar dependencias del backend
       - name: Install backend dependencies
         working-directory: backend
-        run: npm ci
+        run: npm install
 
       # 5️⃣ Instalar cliente PostgreSQL
       - name: Install PostgreSQL client
