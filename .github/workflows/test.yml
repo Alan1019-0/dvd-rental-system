@@ -38,15 +38,15 @@ jobs:
         with:
           node-version: 18
           cache: npm
-          cache-dependency-path: backend/package-lock.json
+          cache-dependency-path: backend/package.json
         env:
           npm_config_cache: /tmp/.npm-cache
 
       # 3️⃣ Verificar existencia de package-lock.json
-      - name: Check backend package-lock.json
+      - name: Check backend package.json
         run: |
-          if [ ! -f backend/package-lock.json ]; then
-            echo "❌ No se encontró backend/package-lock.json"
+          if [ ! -f backend/package.json ]; then
+            echo "❌ No se encontró backend/package.json"
             echo "Asegúrate de tener el archivo bloque de dependencias."
             exit 1
           fi
