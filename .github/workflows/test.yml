@@ -138,5 +138,4 @@ jobs:
             cat scripts/test_results.log >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
           else
-            echo "⚠️ No se generó archivo de resultados." >> $GITHUB_STEP_SUMMARYUpdated upstream
-          fi
+            echo "⚠️ No se generó archivo de resultados." >> $GITHUB_STEP_SUMMARY
