@@ -66,7 +66,7 @@ La API estará disponible en `http://localhost:3000`
 
 ---
 
-## 🧪 Ejecutar Tests
+## Ejecutar Tests
 
 ### Tests Automáticos (CURL/BASH)
 
@@ -264,15 +264,15 @@ docker-compose logs postgres
 
 ---
 
-## 🆘 Ayuda
+## Ayuda
 
-- 📖 Documentación completa: `README.md`
-- 🔌 API Reference: `docs/API.md`
-- 🐛 Reportar issues: GitHub Issues
-- 💬 Preguntas: Crear una discussion en GitHub
+- Documentación completa: `README.md`
+- API Reference: `docs/API.md`
+- Reportar issues: GitHub Issues
+- Preguntas: Crear una discussion en GitHub
 
 
-## 📚 Siguientes Pasos
+## Siguientes Pasos
 
 1. **Leer la documentación completa:** `docs/API.md`
 2. **Configurar GitHub Actions:** Agregar secrets en GitHub
@@ -280,7 +280,7 @@ docker-compose logs postgres
 4. **Personalizar .env:** Cambiar credenciales por defecto
 5. **Explorar endpoints:** Usar Postman o Insomnia
 
-## ✅ Checklist de Verificación
+## Checklist de Verificación
 
 - [ ] Docker y Docker Compose instalados
 - [ ] Repositorio clonado
@@ -290,7 +290,3 @@ docker-compose logs postgres
 - [ ] Health check exitoso: `curl localhost:3000/health`
 - [ ] Tests pasando: `./scripts/test_api.sh`
 - [ ] API respondiendo a requests
-
----
-
-Para desarrollo del frontend, continúa con: `frontend/README.md`
