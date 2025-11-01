@@ -28,39 +28,57 @@ jobs:
           --health-retries 5
 
     steps:
+      # 1️⃣ Clonar el repositorio
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2️⃣ Configurar Node.js con caché segura
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
-          cache: "npm"
+          node-version: 18
+          cache: npm
           cache-dependency-path: backend/package-lock.json
+        env:
+          npm_config_cache: /tmp/.npm-cache
 
+      # 3️⃣ Verificar existencia de package-lock.json
+      - name: Check backend package-lock.json
+        run: |
+          if [ ! -f backend/package-lock.json ]; then
+            echo "❌ No se encontró backend/package-lock.json"
+            echo "Asegúrate de tener el archivo bloque de dependencias."
+            exit 1
+          fi
+          echo "✅ package-lock.json encontrado."
+
+      # 4️⃣ Instalar dependencias del backend
       - name: Install backend dependencies
         working-directory: backend
         run: npm ci
 
+      # 5️⃣ Instalar cliente PostgreSQL
       - name: Install PostgreSQL client
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client unzip wget
 
+      # 6️⃣ Restaurar la base de datos de prueba
       - name: Restore database
         env:
           PGPASSWORD: postgres
         run: |
-          echo "📥 Descargando la base dvdrental..."
+          echo "📥 Descargando base de datos dvdrental..."
           wget -q https://www.postgresqltutorial.com/wp-content/uploads/2019/05/dvdrental.zip
           unzip -o dvdrental.zip
 
           echo "🗄 Restaurando base de datos..."
           pg_restore -U postgres -h localhost -d dvdrental dvdrental.tar || true
 
-          echo "📌 Verificando tablas..."
-          psql -U postgres -h localhost -d dvdrental -c "\dt"
+          echo "📌 Verificando tablas existentes..."
+          psql -U postgres -h localhost -d dvdrental -c "\dt" || true
 
+      # 7️⃣ Iniciar el servidor API
       - name: Start API server
         env:
           NODE_ENV: test
@@ -77,19 +95,21 @@ jobs:
           echo "⏳ Esperando a que la API esté lista..."
           for i in {1..30}; do
             if curl -s http://localhost:3000/health > /dev/null; then
-              echo "✅ API lista!"
+              echo "✅ API lista en puerto 3000!"
               break
             fi
-            echo "Intento $i/30..."
+            echo "Intento $i/30 esperando 2s..."
             sleep 2
           done
 
+      # 8️⃣ Ejecutar pruebas con cURL / Bash
       - name: Run CURL/BASH tests
         run: |
           chmod +x scripts/test_api.sh
           cd scripts
-          ./test_api.sh || true  # evitar fallo del job, lo capturamos en logs
+          ./test_api.sh || true  # evita fallo del job, logs se capturan
 
+      # 9️⃣ Subir resultados de las pruebas
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -97,17 +117,20 @@ jobs:
           name: test-results
           path: scripts/test_results.log
 
+      # 🔟 Detener servidor API
       - name: Stop API server
         if: always()
         run: |
           if [ -f backend/api.pid ]; then
+            echo "🛑 Deteniendo servidor API..."
             kill $(cat backend/api.pid) || true
           fi
 
+      # 🔢 Mostrar resumen de pruebas en el panel de GitHub Actions
       - name: Test Summary
         if: always()
         run: |
-          echo "## ✅ API Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "## ✅ Resultados de API Tests" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ -f scripts/test_results.log ]; then
             echo "### Logs:" >> $GITHUB_STEP_SUMMARY
@@ -115,5 +138,5 @@ jobs:
             cat scripts/test_results.log >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
           else
-            echo "No se generó archivo de resultados." >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ No se generó archivo de resultados." >> $GITHUB_STEP_SUMMARY
           fi
